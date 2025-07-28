@@ -22,87 +22,42 @@ hec_projects=$(find ${hecbench_source} -type f -name "Makefile.aomp"            
 num_hec_projects=$(grep -o "Makefile.aomp" <<< "$hec_projects" | wc -l)
 echo "--INFO-- Total benchmarks available: $num_hec_projects"
 
-# Makefile.aomp - clang++, "program = main", $(LAUCHER), includes
-declare -a remove_projects=("aes-omp" "ans-omp" "b+tree-omp" "che-omp"          \
-  "compute-score-omp" "face-omp" "fdtd3d-omp" "grep-omp" "heartwall-omp"        \
-  "histogram-omp" "hybridsort-omp" "kmeans-omp" "leukocyte-omp" "miniFE-omp"    \
-  "miniWeather-omp" "mcmd-omp" "multimaterial-omp" "myocyte-omp" "srad-omp"     \
-  "tridiagonal-omp" "streamcluster-omp" "slu-omp" "testSNAP-omp"                \
-  "zeropoint-omp")
+desired_projects=("accuracy-omp" "ace-omp" "adam-omp" "aidw-omp"                \
+  "aligned-types-omp" "amgmk-omp" "aobench-omp" "atan2-omp"                     \
+  "background-subtract-omp" "backprop-omp" "bitonic-sort-omp"                   \
+  "black-scholes-omp" "cbsfil-omp" "chemv-omp" "clenergy-omp" "cobahh-omp"      \
+  "complex-omp" "concat-omp" "convolution3D-omp" "cooling-omp" "crc64-omp"      \
+  "cross-omp" "damage-omp" "dct8x8-omp" "ddbp-omp" "distort-omp" "dslash-omp"   \
+  "dxtc2-omp" "easyWave-omp" "ecdh-omp" "eigenvalue-omp" "extrema-omp"          \
+  "filter-omp" "fluidSim-omp" "fsm-omp" "fwt-omp" "ga-omp" "gabor-omp"          \
+  "gaussian-omp" "heat-omp" "hellinger-omp" "hmm-omp" "interleave-omp"          \
+  "ising-omp" "iso2dfd-omp" "jenkins-hash-omp" "keccaktreehash-omp"             \
+  "laplace3d-omp" "lavaMD-omp" "layout-omp" "lda-omp" "libor-omp" "lif-omp"     \
+  "log2-omp" "lombscargle-omp" "mandelbrot-omp" "mask-omp" "matrix-rotate-omp"  \
+  "maxpool3d-omp" "md5hash-omp" "medianfilter-omp" "minisweep-omp"              \
+  "minkowski-omp" "mr-omp" "mrc-omp" "murmurhash3-omp" "nbody-omp" "ne-omp"     \
+  "nms-omp" "ntt-omp" "particle-diffusion-omp" "particlefilter-omp"             \
+  "pathfinder-omp" "perplexity-omp" "popcount-omp" "projectile-omp" "pso-omp"   \
+  "rainflow-omp" "randomAccess-omp" "recursiveGaussian-omp" "resize-omp"        \
+  "rodrigues-omp" "romberg-omp" "rsc-omp" "s3d-omp" "secp256k1-omp"             \
+  "simplemoc-omp" "sobol-omp" "softmax-omp" "sosfil-omp" "sph-omp" "su3-omp"    \
+  "swish-omp" "tensorT-omp" "threadfence-omp" "tsa-omp" "vanGenuchten-omp"      \
+  "winograd-omp" "wlcpow-omp" "wyllie-omp" "xsbench-omp")
 
-# LLVM IR
-remove_projects+=("atomicIntrinsics-omp" "atomicReduction-omp"                  \
-  "babelstream-omp" "channelSum-omp" "cm-omp" "dp-omp" "expdist-omp"            \
-  "feynman-kac-omp" "fhd-omp" "gpp-omp" "hausdorff-omp" "jacobi-omp"            \
-  "lanczos-omp" "lebesgue-omp" "lulesh-omp" "metropolis-omp" "norm2-omp"        \
-  "rsbench-omp" "wordcount-omp")
-
-# C++
-remove_projects+=("langford-omp" "memcpy-omp" "minibude-omp" "permutate-omp"    \
-  "prna-omp" "sad-omp" "sptrsv-omp" "ntt-omp" "s3d-omp")
-
-# libBlasLapack.a
-remove_projects+=("axhelm-omp")
-
-# ld.lld
-remove_projects+=("extend2-omp" "lci-omp" "michalewicz-omp" "wsm5-omp")
-
-# Additional build steps
-remove_projects+=("asmooth-omp" "asta-omp" "atomicPerf-omp"                     \
-  "bezier-surface-omp" "bfs-omp" "binomial-omp" "bn-omp" "bsearch-omp"          \
-  "ccs-omp" "cfd-omp" "clink-omp" "cmp-omp" "columnarSolver-omp" "d2q9-bgk-omp" \
-  "debayer-omp" "deredundancy-omp" "diamond-omp" "fft-omp" "fpc-omp" "fpdc-omp" \
-  "frechet-omp" "frna-omp" "gc-omp" "gd-omp" "geodesic-omp" "gmm-omp"           \
-  "grrt-omp" "haversine-omp" "heat2d-omp" "henry-omp" "hogbom-omp"              \
-  "hotspot3D-omp" "hypterm-omp" "idivide-omp" "linearprobing-omp" "lr-omp"      \
-  "mcpr-omp" "meanshift-omp" "merge-omp" "minimap2-omp" "mis-omp" "mriQ-omp"    \
-  "mt-omp" "nn-omp" "particles-omp" "pns-omp" "pointwise-omp" "urng-omp"        \
-  "qtclustering-omp" "quicksort-omp" "sobel-omp" "sort-omp" "ss-omp"            \
-  "svd3x3-omp" "thomas-omp" "tonemapping-omp" "tqs-omp" "triad-omp" "tsp-omp"   \
-  "vmc-omp" "xlqc-omp" "kernelLaunch-omp" "pnpoly-omp" "quantBnB-omp"           \
-  "easyWave-omp" "snake-omp" "adamw-omp")
-
-# Long run times
-remove_projects+=("affine-omp" "all-pairs-distance-omp" "atomicCost-omp"        \
-  "attention-omp" "boxfilter-omp" "car-omp" "chacha20-omp" "colorwheel-omp"     \
-  "contract-omp" "convolution1D-omp" "degrid-omp" "divergence-omp"              \
-  "entropy-omp" "epistasis-omp" "fresnel-omp" "glu-omp" "interval-omp"          \
-  "ldpc-omp" "lid-driven-cavity-omp" "lrn-omp" "match-omp" "matern-omp"         \
-  "maxFlops-omp" "mdh-omp" "morphology-omp" "nlll-omp" "nqueen-omp"             \
-  "openmp-omp" "overlay-omp" "p4-omp" "phmm-omp" "present-omp" "qrg-omp"        \
-  "reverse-omp" "rtm8-omp" "scan-omp" "sheath-omp" "spm-omp" "stddev-omp"       \
-  "sw4ck-omp" "channelShuffle-omp" "aidw-omp" "dense-embedding-omp"             \
-  "stencil1d-omp" "softmax-online-omp")
-
-# libomptarget
-remove_projects+=("mallocFree-omp" "floydwarshall-omp")
-
-# Memory access
-remove_projects+=("lud-omp" "nw-omp")
-
-# Instructed launch parameters
-remove_projects+=("nms-omp" "fwt-omp" "hwt1d-omp" "radixsort-omp" "reaction-omp"\
-  "scan2-omp" "split-omp")
-
-# Remove some benchmarks
-echo "--INFO-- Remove benchmarks"
-num_remove_projects=${#remove_projects[@]}
-removed=""
-for (( i=0; i<num_remove_projects; i++ ));
-do
-  removed+="${remove_projects[$i]} "
-  replace_str=$(sed 's;/;\\/;g' <<< "$hecbench_source/${remove_projects[$i]}")
-  replace_str="/$replace_str/d"  
-  hec_projects=$(sed "$replace_str" <<< "$hec_projects")
-done
-[[ ! -z "$removed" ]] && echo "$removed"
+# Add benchmarks
+echo "--INFO-- Add benchmarks"
 declare -a makefile_paths=()
-for makefile_path in $hec_projects;
+# count=0
+num_projects=${#desired_projects[@]}
+for (( i=0; i<num_projects; i++ ));
 do
-  makefile_paths+=($makefile_path)
+  project=${desired_projects[$i]}
+  makefile_paths+=("$hecbench_source/$project/Makefile.aomp")
+  # count=$((count + 1))
+  # if [[ count -eq 100 ]]; then break; fi 
 done
 num_projects=${#makefile_paths[@]}
-message="$num_projects ($num_hec_projects - $num_remove_projects)"
+message="$num_projects"
 echo "--INFO-- Total benchmarks available: $message"
 
 # Modify variables in each Makefile.aomp
