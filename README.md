@@ -2,7 +2,7 @@
 Bash scripts that build OpenMP Offload benchmarks included in the [HeCBench Suite](https://github.com/zjin-lcf/HeCBench) on AMD GPUs hardware.
 
 ## Requirements
-Bash shell v4.4, OpenMP 4.5, Clang 19.1.7, AMD ROCm 6.4.1, Flux 0.75
+Bash shell v4.4, OpenMP 4.5, Clang 19.1.7, AMD ROCm 6.0.2, Flux 0.75
 
 ## Configuration
 To configure the builder to your environment, search files for '#TODO change' and update the variables to reflect your file system and preferences. Files and variables include:
