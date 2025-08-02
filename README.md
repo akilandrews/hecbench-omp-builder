@@ -5,20 +5,33 @@ Bash scripts that build OpenMP Offload benchmarks included in the [HeCBench Suit
 Bash shell v4.4, OpenMP 4.5, Clang 19.1.7, AMD ROCm 6.0.2, Flux 0.75
 
 ## Configuration
-To configure the builder to your environment, search files for '#TODO change' and update the variables to reflect your file system and preferences. Files and variables include:
-* 'builder.sh' at a minimum, the following variables:
+First configure the builder to your environment, search files for '#TODO change' and update the variables to reflect your file system and preferences. Edit files and variables:
+* builder.sh:
     * 'jobs_dir' to store Flux job outputs
     * 'outputs_dir' to store builder config files
-    * 'hecbench_install_dir' to clone the benchmark repository
-* 'amdgcn-amd-amdhsa.cfg' for clang++ configuration
-* 'env.sh' for loading modules and environment variables
+    * 'hecbench_install_dir' location to or clone the repository
+* config/amdgcn-amd-amdhsa.cfg for clang++ configuration
+* config/env.sh for loading modules and environment variables
 
-## Run the builder
-Execute each step in a Flux environment in order:
-1. `builder.sh clean`
-2. `builder.sh get`
-3. `builder.sh build`
-4. `builder.sh run`  
+## Run builder
+**Step 1.** Launch an interactive Flux environment (see Flux documentation for help)  
+
+**Step 2.** (Recommended) Clean repository of any prior outputs:
+```console
+builder.sh clean
+```
+**Step 3.** Generate a list of all available benchmarks (removes benchmarks with issues and edits all Makefile.aomp):
+```console
+builder.sh get
+```
+**Step 4.** Build benchmarks:
+```console
+builder.sh build
+```
+**Step 5.** Execute benchmarks:
+```console
+builder.sh run
+``` 
 *Note: progress of steps 3 and 4 can be monitored using `flux top`
 
 ## Authors
